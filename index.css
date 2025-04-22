@@ -4,11 +4,17 @@ body {
     background-color: #ececec;
 }
 header {
+    display: flex;
+    align-items: center;
+    gap: calc(50vw - 4rem);
     padding: 1em;
-    text-align: center;
     background-color: #ececec;
     background-image: url("images/background.jpg");
     background-size: cover;
+}
+
+.logo {
+    width: 4rem;
 }
 
 main {
@@ -16,11 +22,26 @@ main {
     
 }
 
-.logo {
-    width: 150px;
+.specialities-btn {
+    padding: 0.5em;
+    font-family: inherit;
+    font-size: 1.4rem;
+    font-weight: 800;
+    border-radius: 50px;
+    margin: 0 auto;
+    width: 90%;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    border: none;
+    background-color: #c2c2c2;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.349);
+    
 }
 
-.icon {
-    width: 40px;
-    border: 1px red solid;
+.specialities-icon{
+    width: 2rem;
+    padding: 0.5em;
+    background-color: rgb(247, 247, 247);
+    border-radius: 50px;
 }
