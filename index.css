@@ -1,8 +1,9 @@
 body {
+    color: #181818;
     margin: 1em;
     border-radius: 0.6em;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.247);
-    font-family: "Ubuntu", sans-serif;
+    font-family: "Inter", sans-serif;
     background-color: #ececec;
 }
 
@@ -26,90 +27,123 @@ header {
     font-size: 1rem;
 }
 
-/* subheader things */
-.background {
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
+/* title things */
+.main-title {
+    text-align: center;
 }
 
-.subheader {
-    color: white;
-    text-shadow: 0 0 5px black;
-    height: 11em;
-    backdrop-filter: blur(5px);
+.main-title h2 {
+    font-size: 1.2rem;
+    font-weight: 300;
 }
 
-.dicipline-btn, .subheader, a {
+/* dicipline btn things */
+.dicipline-btn, .subheader, .download-btn {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.dicipline-btn, .download-btn {
+.dicipline-btn {
+    color: inherit;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.247);
     border: none ;
     border-radius: 10px;
     gap: 0.5em;
-    transition: all 1s;
-}
-
-main {
-    text-align: center;
-}
-
-h2 {
-    font-size: 1.2rem;
-    font-weight: 300;
-}
-
-.dicipline-btn {
     font-family: inherit;
     flex-direction: column;
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 600;
-    padding: 1.2em;
-}
-
-.dicipline-btn:hover {
-    box-shadow: 0 0 10px #633083;
+    padding: 1.2em 1em;
     transition: all 0.5s;
 }
 
+.dicipline-btn:hover {
+    box-shadow: 0 0 15px #613381;
+    transform: scale(1.05);
+    transition: all 0.5s;
+}
+
+/* container things */
 .grid-container, .download-container {
-    margin: 1em;
+    padding: 1em;
     display: grid;
     justify-content: space-around;
-    gap: 1.8em;
-    
-    
+    gap: 1.0em;
 }
 
 .grid-container {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(auto, 210px));
     grid-auto-rows: 105px;
 }
 
 .download-container {
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    grid-auto-rows: 75px;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    grid-auto-rows: min-content;
+}
+
+/* subheader things */
+.subheader-background {
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.subheader-txt {
+    color: white;
+    text-shadow: 0 0 5px black;
+    text-align: center;
+    padding: 3em;
+    backdrop-filter: blur(0px);
+}
+
+/* download btn things */
+.download-div {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1em;
+    padding: 1.8em;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 0.8em;
+    border: 1px rgba(0, 0, 0, 0.223) solid; ;
 }
 
 .download-btn {
-    color: black;
-    text-decoration: none;
-    background-color: rgb(255, 255, 255);
-    font-weight: 600;
-    padding: 0.5em;
+    text-shadow: 0.4px 0.4px  #a679ff;
+    height: fit-content;
+    gap: 0.5em;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.247);
+    padding: 0.9em 1.4em;
+    font-size: 1rem;
+    font-family: inherit;
+    color: #ffffff;
+    background-color: #713DD8;
+    border: none;
+    border-radius: 0.8em;
+    font-weight: 300;
 }
 
-.pdf {
-    border: 1px black solid;
-    border-radius: 10px;;
-    padding: 0.65em;
-    color: #633183;
+.download-title, .download-actualizacion {
+    margin: 0;   
+}
+.download-title {
+    font-weight: 800;
+    font-size: 1.5rem;
+    padding-bottom: 0.5em;
 }
 
 i {
-    color: #C5318C;
+    text-shadow: none;
+    color: rgba(245, 245, 245, 0.973);
+    font-size: 1.7rem;
+}
+
+.vector {
+    width: 3rem;
+    filter: invert(14%) sepia(82%) saturate(4520%) hue-rotate(313deg) brightness(82%) contrast(117%);
+}
+
+.description {
+    text-align: left;
 }

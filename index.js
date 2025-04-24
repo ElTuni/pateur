@@ -5,12 +5,13 @@ const especialidades = [
     {
       nombre: "Anestesiología",
       alt: "Icono de anestesiólogo con mascarilla",
-      pdf: ["pdf/Carta de Agradecimiento Mamá japonesa.pdf", "pdf/Carta de Agradecimiento Tanaka.pdf"]
+      pdf: ["pdf/Carta de Agradecimiento Mamá japonesa.pdf", "pdf/Carta de Agradecimiento Tanaka.pdf"],
+      
     },
     {
       nombre: "Cabeza y cuello",
       alt: "Icono de cuello con zona tiroidea destacada",
-      pdf: ["pdf/Carta de Agradecimiento Mamá japonesa.pdf", "pdf/Carta de Agradecimiento Tanaka.pdf"]
+      pdf: ["pdf/Carta de Agradecimiento Mamá japonesa.pdf", "pdf/Carta de Agradecimiento Tanaka.pdf"],
     },
     {
       nombre: "Cirugía bariátrica",
@@ -65,7 +66,7 @@ const especialidades = [
     {
       nombre: "Oftalmología",
       alt: "Icono de ojo con detalles de visión",
-      pdf: ["pdf/Carta de Agradecimiento Mamá japonesa.pdf", "pdf/Carta de Agradecimiento Tanaka.pdf"]
+      pdf: ["pdf/Carta de Agradecimiento Mamá japonesa.pdf", "pdf/Carta de Agradecimiento Tanaka.pdf", "pdf/Carta de Agradecimiento Mamá japonesa.pdf", "pdf/Carta de Agradecimiento Tanaka.pdf", "pdf/Carta de Agradecimiento Mamá japonesa.pdf", "pdf/Carta de Agradecimiento Tanaka.pdf", "pdf/Carta de Agradecimiento Mamá japonesa.pdf", "pdf/Carta de Agradecimiento Tanaka.pdf", "pdf/Carta de Agradecimiento Mamá japonesa.pdf"]
     },
     {
       nombre: "Oncología",
@@ -95,40 +96,57 @@ const especialidades = [
   ];
 
 const buttons = especialidades.map(especialidad => `
-    <button data-especialidad=${especialidad.nombre} class="dicipline-btn"><img class="logo" src="iconos/${especialidad.nombre.replaceAll(" ", "")}.png" alt=${especialidad.alt}>${especialidad.nombre}</button>`).join("")
+    <button data-especialidad=${deleteSpaces(especialidad.nombre)} class="dicipline-btn">
+      <img class="vector" src="iconos/${deleteSpaces(especialidad.nombre)}.svg" alt=${especialidad.alt}>
+      ${especialidad.nombre}
+    </button>`).join("")
 mainEl.innerHTML += `
-    <h1>Consentimientos informados</h1>
-    <h2>Garantizamos los derechos de nuestros pacientes</h2>
-    <h3>Accede a nuesta biblioteca de formularios</h3>
+    <div class="main-title">
+      <h1>Consentimientos informados</h1>
+      <h2>Garantizamos los derechos de nuestros pacientes</h2>
+      <h3>Accede a nuesta biblioteca de formularios</h3>
+    </div>
     <div class="grid-container">
         ${buttons}
     </div>`
-
 
 document.addEventListener("click", function(e){
     if (e.target.dataset.especialidad) {
         const current_especialidad = e.target.dataset.especialidad
         console.log(current_especialidad)
-        const current_especialidad_obj = (especialidades.filter(especialidad => especialidad.nombre === capitalize(current_especialidad))[0])
+        const current_especialidad_obj = (especialidades.filter(especialidad => deleteSpaces(especialidad.nombre) === capitalize(current_especialidad))[0])
         console.log(current_especialidad_obj)
+
+        // faltan los pdf reales
         const pdf_html = current_especialidad_obj.pdf.map(pdf => `
-            <a class="download-btn" href="${pdf}" download><div class="pdf">.pdf</div>Download Img<i class="fa-solid fa-arrow-down"></i></a>`).join('')
-        mainEl.innerHTML = `
-        <div class="background" id="background">
-            <div class="subheader">
-                <h1>${capitalize(current_especialidad)}</h1>
+          <div class="download-div">
+            <div>
+              <p class="download-title">Hepatograma nivel 4</p>
+              <p class="download-actualizacion">Ultima actualización: 99/99/9999</p>
             </div>
+              <button class="download-btn" onclick="window.open('pdf/Carta de Agradecimiento Mamá japonesa.pdf')"><i class="fa-regular fa-file-pdf"></i>Descargar</button>
+          </div>`).join('')
+
+        mainEl.innerHTML = `
+        <div class="subheader-background" id="background">
+          <div class="subheader-txt">
+            <h1>${capitalize(current_especialidad_obj.nombre)}</h1>
+          </div>
         </div>
+        <h2 class="description">Se desarrollaron formularios específicos para los procedimientos más frecuentes realizadas en el servicio de ${current_especialidad} de la Clínica Pasteur. <br>Recuerde que deben ser impresos, completados con los datos correspondientes, firmados por el paciente y validados con firma y sello del profesional médico interviniente.</h2>
         <div class="download-container">
-            ${pdf_html}
+          ${pdf_html}
         </div>`;
 
         document.getElementById("background").style.backgroundImage = `url('images/${e.target.dataset.especialidad}.jpg')`
-
     }
 })
 
 // Funcion para poner mayuscula a la primera letra
 function capitalize(word) {
     return word[0].toUpperCase() + word.slice(1)
+}
+
+function deleteSpaces (word) {
+  return word.replaceAll(" ", "")
 }
