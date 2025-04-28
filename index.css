@@ -46,7 +46,8 @@ header {
 
 .dicipline-btn {
     position: relative;
-    width: 210px;
+    width: 160px;
+    min-height: 140px;
     color: inherit;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.247);
     border: none ;
@@ -74,12 +75,6 @@ header {
 
 }
 
-/* .dicipline-btn:hover::before {
-    filter: blur(15px) opacity(40%);
-    transition: all 0.5s;
-    z-index: -1;
-} */
-
 .dicipline-btn:hover {
     filter: 
         drop-shadow(0 0 15px rgba(196, 49, 139, 0.295))
@@ -100,8 +95,6 @@ header {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    /* grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-    grid-auto-rows: 110px; */
 }
 
 .download-container {
