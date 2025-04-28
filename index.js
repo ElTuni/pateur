@@ -1,6 +1,6 @@
-
+require('dotenv').config()
+const apiKey = process.env.API_KEY
 let pdf_db = ""
-const apiKey = "AIzaSyBbOHNyv0W7cgNS0UEh3zLnfJHJXU5_7Dg";
 async function getFolder(folderId) {
   // Buscar archivos que estén dentro de esa carpeta
   const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${apiKey}&fields=files(id,name,mimeType,webViewLink,webContentLink)`
@@ -17,7 +17,7 @@ getFolder(folderId_main)
 async function getFolder01(current_dicipline) {
 
   // filtrar de todas las dicipline, cual es la elegida y obtener un obj
-  const drive_current_dicipline_obj = pdf_db.filter(pdf_unit => pdf_unit.name === current_dicipline)[0]
+  const drive_current_dicipline_obj = pdf_db.filter(pdf_unit => deleteSpaces(pdf_unit.name) === current_dicipline)[0]
 
   // buscamos en el drive, segun el id de la capeta de la diciplina
   const url01 = `https://www.googleapis.com/drive/v3/files?q='${drive_current_dicipline_obj.id}'+in+parents&key=${apiKey}&fields=files(id,name,mimeType,webViewLink,webContentLink)`
@@ -155,6 +155,6 @@ function capitalize(word) {
     return word[0].toUpperCase() + word.slice(1)
 }
 
-function deleteSpaces (word) {
+function deleteSpaces(word) {
   return word.replaceAll(" ", "")
 }
