@@ -121,13 +121,14 @@ async function getFolder01(e) {
     </div>`).join('')
 
 
-  mainEl.innerHTML = `
+  mainEl.innerHTML = `  
   <div class="subheader-background" id="background">
     <div class="subheader-txt">
       <h1>${capitalize(current_dicipline_spaced)}</h1>
     </div>
   </div>
   <h2 class="description">Se desarrollaron formularios específicos para los procedimientos más frecuentes realizadas en el servicio de ${current_dicipline_spaced.toLowerCase()} de la Clínica Pasteur. <br>Recuerde que deben ser impresos, completados con los datos correspondientes, firmados por el paciente y validados con firma y sello del profesional médico interviniente.</h2>
+  <p class="subtitulos">Documentos:</p>
   <div class="download-container">
     ${pdf_html}
   </div>`;
@@ -144,11 +145,14 @@ const buttons_html = especialidades.map(especialidad => `
 mainEl.innerHTML += `
     <div class="main-title">
       <h1>Consentimientos informados</h1>
-      <h2>Garantizamos los derechos de nuestros pacientes</h2>
-      <h3>Accede a nuesta biblioteca de formularios</h3>
+      <h2 class="subtitulos">Garantizamos los derechos de nuestros pacientes</h2>
     </div>
-    <div class="grid-container">
-      ${buttons_html}
+
+    <div>
+      <h3 class="subtitulos">Accede a nuesta biblioteca de formularios:</h3>
+      <div class="grid-container">
+        ${buttons_html}
+      </div>
     </div>`
 
 document.addEventListener("click", function(e){
