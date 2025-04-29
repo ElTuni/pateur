@@ -139,7 +139,7 @@ async function getFolder01(e) {
 
 const buttons_html = especialidades.map(especialidad => `
     <button data-especialidad=${(especialidad.nombre).replaceAll(" ", "_")} class="dicipline-btn">
-      <img class="vector" src="iconos/${deleteSpaces(especialidad.nombre)}.svg" alt="${especialidad.alt}">
+      <img data-especialidad=${(especialidad.nombre).replaceAll(" ", "_")} class="vector" src="iconos/${deleteSpaces(especialidad.nombre)}.svg" alt="${especialidad.alt}">
       ${especialidad.nombre}
     </button>`).join("")
 mainEl.innerHTML += `
