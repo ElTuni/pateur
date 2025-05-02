@@ -9,12 +9,17 @@ body {
 
 /* header things */
 header {
+    border-bottom: 1px rgba(0, 0, 0, 0.223) solid; 
+}
+
+.btn-header {
+    all: unset;
+    color: inherit;
     display: flex;
     align-items: center;
     gap: 0.25em;
     padding: 0.5em;
-
-    border-bottom: 1px rgba(0, 0, 0, 0.223) solid; 
+    font-family: inherit;
 }
 
 h1 {
@@ -73,6 +78,7 @@ h1 {
 }
 
 .dicipline-btn::before {
+    size: 1vw;
     position: absolute;
     content: "";
     left: 0;
@@ -82,7 +88,6 @@ h1 {
     background: linear-gradient(130deg,rgba(196, 49, 139, 1) 0%, rgba(99, 48, 128, 1) 100%);
     z-index: -1;
     filter: blur(15px) opacity(0%);
-    transition: all 0.5s;
 
 }
 
@@ -91,7 +96,6 @@ h1 {
         drop-shadow(0 0 15px rgba(196, 49, 139, 0.295))
         drop-shadow(0 0 15px rgba(99, 48, 128, 0.295));
     transform: scale(1.05);
-    transition: all 0.5s;
 }
 
 /* container things */
@@ -182,4 +186,8 @@ i {
     padding: 0 1em;
     font-weight: 500;
     margin: 1.5em 0 3em 0;
+}
+
+.hidden {
+    display: none;
 }

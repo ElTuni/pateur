@@ -1,5 +1,6 @@
 const mainEl = document.getElementById("main-container")
 const backgroundEl = document.getElementById("background")
+const headerEl = document.getElementById("header")
 const apiKey = "AIzaSyDVQ6oLA9MnKb5Fb8v2UIOQmArGZjYGRa0"
 const folderId_main = "1Le13O6M6tlMAfRUUbQnSMFaojPvup9rS";
 const especialidades = [
@@ -85,7 +86,10 @@ const especialidades = [
   }
 ]
 
+
+
 let pdf_db = ""
+
 async function getFolder(folderId) {
   // Buscar archivos que estén dentro de esa carpeta
   const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${apiKey}&fields=files(id,name,mimeType,webViewLink,webContentLink)`
@@ -96,10 +100,14 @@ async function getFolder(folderId) {
 
 getFolder(folderId_main)
 
-async function getFolder01(e) {
-  const current_dicipline_spaced = e.target.dataset.especialidad.replaceAll("_", " ")
+async function getFolderDicipline(e) {
+  
+  const current_dicipline_spaced = e.replaceAll("_", " ")
   // lo juntamos, ya que esta separado por "_"
-  const current_dicipline = e.target.dataset.especialidad.replaceAll("_", "")
+  const current_dicipline = e.replaceAll("_", "")
+
+  
+
   // filtrar de todas las dicipline, cual es la elegida y obtener un obj
   const drive_current_dicipline_obj = pdf_db.filter(pdf_unit => deleteSpaces(pdf_unit.name) === current_dicipline)[0]
 
@@ -136,31 +144,52 @@ async function getFolder01(e) {
   document.getElementById("background").style.backgroundImage = `url('images/${current_dicipline}.jpg')`
 }
 
-
-const buttons_html = especialidades.map(especialidad => `
-    <button data-especialidad=${(especialidad.nombre).replaceAll(" ", "_")} class="dicipline-btn">
-      <img data-especialidad=${(especialidad.nombre).replaceAll(" ", "_")} class="vector" src="iconos/${deleteSpaces(especialidad.nombre)}.svg" alt="${especialidad.alt}">
-      ${especialidad.nombre}
-    </button>`).join("")
-mainEl.innerHTML += `
-    <div class="main-title">
-      <h1>Consentimientos informados</h1>
-      <h2 class="subtitulos">Garantizamos los derechos de nuestros pacientes</h2>
-    </div>
-
-    <div>
-      <h3 class="subtitulos">Accede a nuesta biblioteca de formularios:</h3>
-      <div class="grid-container">
-        ${buttons_html}
+function renderMain(){
+  // creacion de los botones iterando sobre el array de las especialidades
+  const buttons_html = especialidades.map(especialidad => `
+      <button data-especialidad=${(especialidad.nombre).replaceAll(" ", "_")} class="dicipline-btn">
+        <img data-especialidad=${(especialidad.nombre).replaceAll(" ", "_")} class="vector" src="iconos/${deleteSpaces(especialidad.nombre)}.svg" alt="${especialidad.alt}">
+        ${especialidad.nombre}
+      </button>`).join("")
+  
+  // actualizamos el dom con la main page
+  mainEl.innerHTML = `
+      <div class="main-title">
+        <h1>Consentimientos informados</h1>
+        <h2 class="subtitulos">Garantizamos los derechos de nuestros pacientes</h2>
       </div>
-    </div>`
 
+      <div>
+        <h3 class="subtitulos">Accede a nuesta biblioteca de formularios:</h3>
+        <div class="grid-container">
+          ${buttons_html}
+        </div>
+      </div>`
+}
+
+// event listener para los botones de las especialidades
 document.addEventListener("click", function(e){
   // si se clickea alguna especialidad
   if (e.target.dataset.especialidad) {
-    getFolder01(e)
+    getFolderDicipline(e.target.dataset.especialidad)
+    updateUrl(e.target.dataset.especialidad)
   }
 })
+
+// en caso de que se usen las flechas de atras y adelante
+window.addEventListener("popstate", function(e){
+  // si es alguna especialidad, se la pasa a la función
+  if (e.state) {
+    getFolderDicipline(e.state.page)
+  } // si no tiene nada, es que va a a la main page
+  else {
+    renderMain()
+  }
+})
+
+function updateUrl (currentPage) {
+  history.pushState({page: currentPage}, '', `/${currentPage}`)
+}
 
 function capitalize(word) {
     return word[0].toUpperCase() + word.slice(1)
@@ -169,3 +198,5 @@ function capitalize(word) {
 function deleteSpaces(word) {
   return word.replaceAll(" ", "")
 }
+
+renderMain()
