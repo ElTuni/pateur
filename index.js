@@ -178,12 +178,15 @@ document.addEventListener("click", function(e){
 // en caso de que se usen las flechas de atras y adelante
 window.addEventListener("popstate", function(e){
   // si no es main, es alguna especialidad, por lo que se la pasa a la función
-  if (e.state != "main") {
-    getFolderDicipline(e.state.page)
-    updateUrl(e.state.page)
+  if (e.state === "main") {
+    console.log('aaa')
+    renderMain()
   } // de lo contrario, significa que es main, y llama a la funcion para redearla
   else {
-    renderMain()
+    console.log('bbb')
+    getFolderDicipline(e.state.page)
+    updateUrl(e.state.page)
+    
   }
 })
 
