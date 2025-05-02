@@ -25,7 +25,6 @@ header {
 h1 {
     margin: 0;
     font-size: clamp(1.3rem, 6vw, 4rem);
-    text-decoration: underline 0.1em solid rgba(99, 48, 128, 1);
     text-underline-offset: 0.12em;
 }
 .logo {
@@ -42,6 +41,10 @@ h1 {
 .main-title {
     text-align: center;
     margin: 6em 0.5em 6em 0.5em;
+}
+
+.main-title h1 {
+    text-decoration: underline 0.1em solid rgba(99, 48, 128, 1);
 }
 
 .main-title h2 {

@@ -92,7 +92,7 @@ let pdf_db = ""
 
 async function getFolder(folderId) {
   // Buscar archivos que estén dentro de esa carpeta
-  const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${apiKey}&fields=files(id,name,mimeType,webViewLink,webContentLink)`
+  const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${apiKey}&fields=files(id,name)`
   const respuesta = await fetch(url)
   const respuesta_promise = await respuesta.json()
   pdf_db = await respuesta_promise.files
@@ -106,24 +106,24 @@ async function getFolderDicipline(e) {
   // lo juntamos, ya que esta separado por "_"
   const current_dicipline = e.replaceAll("_", "")
 
-  
 
   // filtrar de todas las dicipline, cual es la elegida y obtener un obj
   const drive_current_dicipline_obj = pdf_db.filter(pdf_unit => deleteSpaces(pdf_unit.name) === current_dicipline)[0]
 
   // buscamos en el drive, segun el id de la capeta de la diciplina
-  const url01 = `https://www.googleapis.com/drive/v3/files?q='${drive_current_dicipline_obj.id}'+in+parents&key=${apiKey}&fields=files(id,name,mimeType,webViewLink,webContentLink)`
+  const url01 = `https://www.googleapis.com/drive/v3/files?q='${drive_current_dicipline_obj.id}'+in+parents&key=${apiKey}&fields=files(name,webViewLink,modifiedTime)`
   
   // esperamos hasta que haga los request
   const response01 = await fetch(url01)
   const response01_json = await response01.json()
+  console.log(response01_json)
 
 
   const pdf_html = response01_json.files.map(pdf => `
     <div class="download-div">
       <div>
         <p class="download-title">${pdf.name}</p>
-        <p class="download-actualizacion">Ultima actualización: 99/99/9999</p>
+        <p class="download-actualizacion">Ultima actualización: ${new Date(pdf.modifiedTime).toLocaleDateString('es-AR', {day: '2-digit', month: '2-digit', year: 'numeric'})}</p>
       </div>
         <button class="download-btn" onclick="window.open('${pdf.webViewLink}')"><i class="fa-regular fa-file-pdf"></i>Descargar</button>
     </div>`).join('')
