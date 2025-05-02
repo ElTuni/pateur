@@ -86,7 +86,7 @@ const especialidades = [
   }
 ]
 
-let pdf_db = ""
+let pdf_db = []
 
 async function getFolder(folderId) {
   // Buscar archivos que estén dentro de esa carpeta
@@ -198,4 +198,4 @@ function deleteSpaces(word) {
 }
 
 renderMain()
-updateUrl("main")
+history.replaceState({page: "main"}, '', "/main")
