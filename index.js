@@ -86,8 +86,6 @@ const especialidades = [
   }
 ]
 
-
-
 let pdf_db = ""
 
 async function getFolder(folderId) {
@@ -145,6 +143,7 @@ async function getFolderDicipline(e) {
 }
 
 function renderMain(){
+  updateUrl("main")
   // creacion de los botones iterando sobre el array de las especialidades
   const buttons_html = especialidades.map(especialidad => `
       <button data-especialidad=${(especialidad.nombre).replaceAll(" ", "_")} class="dicipline-btn">
@@ -178,10 +177,11 @@ document.addEventListener("click", function(e){
 
 // en caso de que se usen las flechas de atras y adelante
 window.addEventListener("popstate", function(e){
-  // si es alguna especialidad, se la pasa a la función
-  if (e.state) {
+  // si no es main, es alguna especialidad, por lo que se la pasa a la función
+  if (e.state != "main") {
     getFolderDicipline(e.state.page)
-  } // si no tiene nada, es que va a a la main page
+    updateUrl(e.state.page)
+  } // de lo contrario, significa que es main, y llama a la funcion para redearla
   else {
     renderMain()
   }
