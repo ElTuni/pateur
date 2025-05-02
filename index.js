@@ -177,7 +177,7 @@ document.addEventListener("click", function(e){
 // en caso de que se usen las flechas de atras y adelante
 window.addEventListener("popstate", function(e){
   // si no es main, es alguna especialidad, por lo que se la pasa a la función
-  if (e.state) {
+  if (e.state != "main") {
     getFolderDicipline(e.state.page)
   } // de lo contrario, significa que es main, y llama a la funcion para redearla
   else {
@@ -198,3 +198,4 @@ function deleteSpaces(word) {
 }
 
 renderMain()
+updateUrl("main")
