@@ -101,11 +101,10 @@ async function getFolder(folderId) {
 getFolder(folderId_main)
 
 async function getFolderDicipline(e) {
-  
+
   const current_dicipline_spaced = e.replaceAll("_", " ")
   // lo juntamos, ya que esta separado por "_"
   const current_dicipline = e.replaceAll("_", "")
-
 
   // filtrar de todas las dicipline, cual es la elegida y obtener un obj
   const drive_current_dicipline_obj = pdf_db.filter(pdf_unit => deleteSpaces(pdf_unit.name) === current_dicipline)[0]
@@ -116,8 +115,6 @@ async function getFolderDicipline(e) {
   // esperamos hasta que haga los request
   const response01 = await fetch(url01)
   const response01_json = await response01.json()
-  console.log(response01_json)
-
 
   const pdf_html = response01_json.files.map(pdf => `
     <div class="download-div">
@@ -142,6 +139,9 @@ async function getFolderDicipline(e) {
   </div>`;
 
   document.getElementById("background").style.backgroundImage = `url('images/${current_dicipline}.jpg')`
+  
+  // scroll to the top
+  window.scrollTo(0, 0)
 }
 
 function renderMain(){
