@@ -92,54 +92,44 @@ async function getFolder(folderId) {
   // Buscar archivos que estén dentro de esa carpeta
   const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${apiKey}&fields=files(id,name)`
   const respuesta = await fetch(url)
-  const respuesta_promise = await respuesta.json()
-  pdf_db = await respuesta_promise.files
+  const data = await respuesta.json()
+  pdf_db = data.files
 }
 
 getFolder(folderId_main)
 
 async function getFolderDicipline(e) {
-
+  // lo separamos, ya que esta separado por "_"
   const current_dicipline_spaced = e.replaceAll("_", " ")
   // lo juntamos, ya que esta separado por "_"
   const current_dicipline = e.replaceAll("_", "")
 
   // filtrar de todas las dicipline, cual es la elegida y obtener un obj
   const drive_current_dicipline_obj = pdf_db.filter(pdf_unit => deleteSpaces(pdf_unit.name) === current_dicipline)[0]
-
+  
   // buscamos en el drive, segun el id de la capeta de la diciplina
-  const url01 = `https://www.googleapis.com/drive/v3/files?q='${drive_current_dicipline_obj.id}'+in+parents&key=${apiKey}&fields=files(name,webViewLink,modifiedTime)`
+  const url = `https://www.googleapis.com/drive/v3/files?q='${drive_current_dicipline_obj.id}'+in+parents&key=${apiKey}&fields=files(name,webViewLink,modifiedTime,mimeType,id)`
   
   // esperamos hasta que haga los request
-  const response01 = await fetch(url01)
-  const response01_json = await response01.json()
+  const response = await fetch(url)
+  const data = await response.json()
 
-  const pdf_html = response01_json.files.map(pdf => `
-    <div class="download-div">
-      <div>
-        <p class="download-title">${pdf.name}</p>
-        <p class="download-actualizacion">Ultima actualización: ${new Date(pdf.modifiedTime).toLocaleDateString('es-AR', {day: '2-digit', month: '2-digit', year: 'numeric'})}</p>
-      </div>
-        <button class="download-btn" onclick="window.open('${pdf.webViewLink}')"><i class="fa-regular fa-file-pdf"></i>Descargar</button>
-    </div>`).join('')
-
-
-  mainEl.innerHTML = `  
-  <div class="subheader-background" id="background">
-    <div class="subheader-txt">
-      <h1>${capitalize(current_dicipline_spaced)}</h1>
-    </div>
-  </div>
-  <h2 class="description">Se desarrollaron formularios específicos para los procedimientos más frecuentes realizadas en el servicio de ${current_dicipline_spaced.toLowerCase()} de la Clínica Pasteur. <br>Recuerde que deben ser impresos, completados con los datos correspondientes, firmados por el paciente y validados con firma y sello del profesional médico interviniente.</h2>
-  <p class="subtitulos">Documentos:</p>
-  <div class="download-container">
-    ${pdf_html}
-  </div>`;
-
-  document.getElementById("background").style.backgroundImage = `url('images/${current_dicipline}.jpg')`
-  
-  // scroll to the top
-  window.scrollTo(0, 0)
+  // checkeamos si el primer archivo de la carpeta, es un folder
+  if (data.files[0]?.mimeType.endsWith("folder")) {
+    // creamos la varialbe donde vamos a guardar todos los archivos de las carpetas
+    let allInsideFiles = []
+    for (const folderFile of data.files) {
+      const subResponse = await fetch(`https://www.googleapis.com/drive/v3/files?q='${folderFile.id}'+in+parents&key=${apiKey}&fields=files(name,webViewLink,modifiedTime,mimeType)`)
+      const subData = await subResponse.json()
+      // vamos creando los divs, con los archivos de cada carpeta, co su respectivo nombre
+      allInsideFiles.push(renderDownloadDivs(subData.files, folderFile.name))
+    }
+    renderSubPage(allInsideFiles.join(''), current_dicipline_spaced, current_dicipline)
+  } 
+  // si no contiene ningun folder
+  else {
+    renderSubPage(renderDownloadDivs(data.files), current_dicipline_spaced, current_dicipline)
+  }
 }
 
 function renderMain(){
@@ -195,6 +185,44 @@ function capitalize(word) {
 
 function deleteSpaces(word) {
   return word.replaceAll(" ", "")
+}
+
+function renderDownloadDivs(downloadsArray, folderName = "") {
+  let folderNameDiv = ""
+  // si los archivos provienen de una carpeta, agregamos su nombra
+  if (folderName) {
+    console.log(folderName)
+    folderNameDiv = `<p class="subtitulos">${folderName}</p>`
+  }
+  return `
+  ${folderNameDiv}
+  <div class="download-container">
+    ${downloadsArray.map(pdf => `
+      <div class="download-div">
+        <div>
+          <p class="download-title">${pdf.name}</p>
+          <p class="download-actualizacion">Ultima actualización: ${new Date(pdf.modifiedTime).toLocaleDateString('es-AR', {day: '2-digit', month: '2-digit', year: 'numeric'})}</p>
+        </div>
+          <button class="download-btn" onclick="window.open('${pdf.webViewLink}')"><i class="fa-regular fa-file-pdf"></i>Descargar</button>
+      </div>`).join('')}
+    </div>`
+}
+
+function renderSubPage (pdf_html, current_dicipline_spaced, current_dicipline){
+    mainEl.innerHTML = `  
+    <div class="subheader-background" id="background">
+      <div class="subheader-txt">
+        <h1>${capitalize(current_dicipline_spaced)}</h1>
+      </div>
+    </div>
+    <h2 class="description">Se desarrollaron formularios específicos para los procedimientos más frecuentes realizadas en el servicio de ${current_dicipline_spaced.toLowerCase()} de la Clínica Pasteur. <br>Recuerde que deben ser impresos, completados con los datos correspondientes, firmados por el paciente y validados con firma y sello del profesional médico interviniente.</h2>
+    <p class="subtitulos underline">Documentos:</p>
+    ${pdf_html}`
+
+    document.getElementById("background").style.backgroundImage = `url('images/${current_dicipline}.jpg')`
+    
+    // scroll to the top
+    window.scrollTo(0, 0)
 }
 
 renderMain()
