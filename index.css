@@ -84,7 +84,7 @@ h1 {
     font-size: 1rem;
     font-weight: 600;
     padding: 1.2em 1em;
-    transition: all 0.5s;
+    transition: all 0.35s;
 }
 
 .dicipline-btn::before {
@@ -101,7 +101,7 @@ h1 {
 
 }
 
-.dicipline-btn:hover {
+.dicipline-btn:hover, .otros-documentos-btn:hover {
     filter: 
         drop-shadow(0 0 15px rgba(196, 49, 139, 0.295))
         drop-shadow(0 0 15px rgba(99, 48, 128, 0.295));
@@ -207,6 +207,7 @@ i {
 }
 
 .otros-documentos-btn {
+    font-size: 1.02rem;
     font-family: inherit;
     font-weight: 600;
     border: none;
@@ -214,4 +215,5 @@ i {
     background-color: #b54a8ccb;
     padding: .8em 1.8em;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.138);
+    transition: all 0.35s;
 }
