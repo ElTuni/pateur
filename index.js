@@ -234,4 +234,4 @@ function renderSubPage (pdf_html, current_dicipline_spaced, current_dicipline){
 }
 
 renderMain()
-//history.replaceState({page: "main"}, '', "/main")
+history.replaceState({page: "main"}, '', "/main")
