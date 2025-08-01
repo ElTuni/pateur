@@ -105,7 +105,9 @@ async function getFolderDicipline(e) {
   const current_dicipline = e.replaceAll("_", "")
 
   // filtrar de todas las dicipline, cual es la elegida y obtener un obj
-  const drive_current_dicipline_obj = pdf_db.filter(pdf_unit => deleteSpaces(pdf_unit.name) === current_dicipline)[0]
+  const drive_current_dicipline_obj = pdf_db.filter(
+    pdf_unit => deleteSpaces(pdf_unit.name) === current_dicipline)
+    [0]
   
   // buscamos en el drive, segun el id de la capeta de la diciplina
   const url = `https://www.googleapis.com/drive/v3/files?q='${drive_current_dicipline_obj.id}'+in+parents&key=${apiKey}&fields=files(name,webViewLink,modifiedTime,mimeType,id)`
@@ -121,7 +123,7 @@ async function getFolderDicipline(e) {
     for (const folderFile of data.files) {
       const subResponse = await fetch(`https://www.googleapis.com/drive/v3/files?q='${folderFile.id}'+in+parents&key=${apiKey}&fields=files(name,webViewLink,modifiedTime,mimeType)`)
       const subData = await subResponse.json()
-      // vamos creando los divs, con los archivos de cada carpeta, co su respectivo nombre
+      // vamos creando los divs, con los archivos de cada carpeta, con su respectivo nombre
       allInsideFiles.push(renderDownloadDivs(subData.files, folderFile.name))
     }
     renderSubPage(allInsideFiles.join(''), current_dicipline_spaced, current_dicipline)
@@ -145,6 +147,12 @@ function renderMain(){
       <div class="main-title">
         <h1>Consentimientos informados</h1>
         <h2 class="subtitulos">Garantizamos los derechos de nuestros pacientes</h2>
+      </div>
+
+      <div class="otros-documentos-container">
+        <button data-especialidad="Documentos_generales" class="otros-documentos-btn">
+          Otros documentos
+        </button>
       </div>
 
       <div>
@@ -226,4 +234,4 @@ function renderSubPage (pdf_html, current_dicipline_spaced, current_dicipline){
 }
 
 renderMain()
-history.replaceState({page: "main"}, '', "/main")
+//history.replaceState({page: "main"}, '', "/main")
