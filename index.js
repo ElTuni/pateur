@@ -385,26 +385,34 @@ function handleSearch(e) {
 }
 
 function renderDownloadDivs(downloadsArray, folderName = "") {
-  let folderNameDiv = ""
-  // si los archivos provienen de una carpeta, agregamos su nombra
-  if (folderName) {
-    folderNameDiv = `<p class="subtitulos folder-title">${folderName}</p>`
-  }
+  const titleHtml = folderName ? `<p class="folder-card-title">${folderName}</p>` : ""
+
   return `
-  ${folderNameDiv}
-  <div class="download-container">
-    ${downloadsArray.map(pdf => `
-      <div class="download-div">
-        <div>
-          <p class="download-title">${pdf.name.replace(/\.pdf$/i, "")}</p>
-          <p class="download-actualizacion">Ultima actualización: ${new Date(pdf.modifiedTime).toLocaleDateString('es-AR', {day: '2-digit', month: '2-digit', year: 'numeric'})}</p>
-        </div>
-          <button class="download-btn" aria-label="Descargar ${pdf.name.replace(/\.pdf$/i, "")}" onclick="window.open('${pdf.webViewLink}')"><i class="fa-regular fa-file-pdf"></i>Descargar</button>
-      </div>`).join('')}
+    <div class="folder-card">
+      ${titleHtml}
+      <div class="download-container">
+        ${downloadsArray.map(pdf => `
+          <div class="download-div">
+            <div class="download-info">
+              <p class="download-title">${pdf.name.replace(/\.pdf$/i, "")}</p>
+              <p class="download-actualizacion">${new Date(pdf.modifiedTime).toLocaleDateString('es-AR', {day: '2-digit', month: '2-digit', year: 'numeric'})}</p>
+            </div>
+            <button class="download-btn" aria-label="Descargar ${pdf.name.replace(/\.pdf$/i, "")}" onclick="window.open('${pdf.webViewLink}')">
+              <img class="download-icon" src="images/download vector.png" alt="">
+              <span class="download-text">Descargar</span>
+            </button>
+          </div>`).join('')}
+      </div>
     </div>`
 }
 
 function renderSubPage (pdf_html, current_dicipline_spaced, current_dicipline){
+    const isDocumentosGenerales = current_dicipline === "Documentosgenerales"
+
+    const descripcionHtml = isDocumentosGenerales
+      ? `Acceda a la documentación necesaria para la adecuada programación y ejecución de las cirugías en el Centro Quirúrgico Pasteur. Descargue, complete y firme los formularios correspondientes para formalizar la pre-admisión e internación de sus pacientes en Clínica Pasteur.`
+      : `Formularios de consentimientos informados específicos para los procedimientos quirúrgicos utilizados con más frecuencia en el Servicio de ${capitalize(current_dicipline_spaced)}.<br><br><strong>Requisito de validez:</strong><br>Los documentos deben presentarse impresos, con los datos del paciente completos, firma del paciente y la firma/sello del médico responsable que indica el procedimiento.`
+
     mainEl.innerHTML = `
     <div class="subheader-background" id="background">
       <div class="subheader-txt">
@@ -415,12 +423,16 @@ function renderSubPage (pdf_html, current_dicipline_spaced, current_dicipline){
       Volver
     </button>
     </div>
-    <h2 class="description">Formularios específicos de los procedimientos utilizados con más frecuencia en el Servicio de ${capitalize(current_dicipline_spaced)}.<br><br>Requisito de validez: Los documentos deben presentarse impresos, con los datos del paciente completos, firma del paciente y la firma/sello del médico responsable que indica el procedimiento.</h2>
-    <p class="subtitulos underline text-left">Documentos:</p>
+    <h2 class="description">${descripcionHtml}</h2>
     ${pdf_html}`
 
-    document.getElementById("background").style.backgroundImage = `url('images/${current_dicipline}.jpg')`
-    
+    const bgEl = document.getElementById("background")
+    if (current_dicipline === "Documentosgenerales") {
+      bgEl.style.background = "linear-gradient(180deg,rgba(167, 92, 138, 0.69) 0%,rgba(181, 74, 140, 0.82) 85%, transparent 80%)"
+    } else {
+      bgEl.style.backgroundImage = `url('images/${current_dicipline}.jpg')`
+    }
+
     // scroll to the top
     window.scrollTo({ top: 0, behavior: 'smooth' })
 }
