@@ -5,15 +5,45 @@ body {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.247);
     font-family: "Inter", sans-serif;
     background-color: #ececec;
+    min-height: calc(100dvh - 2em);
+    display: flex;
+    flex-direction: column;
+}
+
+#main-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.folder-title {
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    border-bottom: 0.15em solid rgba(99, 48, 128, 1);
+    padding-bottom: 0.02em;
+    text-transform: lowercase;
+}
+
+.folder-title::first-letter {
+    text-transform: uppercase;
+}   
+
+.especialidades-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 /* header things */
 header {
-    border-bottom: 1px rgba(0, 0, 0, 0.223) solid; 
+    border-bottom: 1px rgba(0, 0, 0, 0.223) solid;
 }
 
 .btn-header {
     all: unset;
+    cursor: pointer;
     color: inherit;
     display: flex;
     align-items: center;
@@ -50,6 +80,10 @@ h1 {
 .main-title h2 {
     font-size: clamp(0.6rem, 3vw, 1.4rem);
     font-weight: 500;
+    max-width: 1300px;
+    padding: 0em 2em;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .subtitulos {
@@ -63,6 +97,11 @@ h1 {
     text-decoration: underline 1px solid black;
 }
 
+.text-left {
+    text-align: left;
+    padding-left: 1em;
+}
+
 /* dicipline btn things */
 .dicipline-btn, .subheader, .download-btn {
     display: flex;
@@ -71,10 +110,12 @@ h1 {
 }
 
 .dicipline-btn {
+    cursor: pointer;
     position: relative;
     width: 160px;
     min-height: 140px;
     color: inherit;
+    background-color: white;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.247);
     border: none ;
     border-radius: 10px;
@@ -102,10 +143,8 @@ h1 {
 }
 
 .dicipline-btn:hover, .otros-documentos-btn:hover {
-    filter: 
-        drop-shadow(0 0 15px rgba(196, 49, 139, 0.295))
-        drop-shadow(0 0 15px rgba(99, 48, 128, 0.295));
-    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(99, 48, 128, 0.25);
+    transform: scale(1.02);
 }
 
 /* container things */
@@ -120,6 +159,7 @@ h1 {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    padding-bottom: 2em;
 }
 
 .download-container {
@@ -130,6 +170,7 @@ h1 {
 
 /* subheader things */
 .subheader-background {
+    position: relative;
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
@@ -139,23 +180,34 @@ h1 {
     color: white;
     text-shadow: 0 0 5px black;
     text-align: center;
-    padding: 3em;
+    padding: 3em 1em;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     backdrop-filter: blur(5px);
 }
 
 /* download btn things */
 .download-div {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 1em;
     padding: 1.8em;
-    align-items: center;
     justify-content: space-between;
     border-radius: 0.8em;
-    border: 1px rgba(0, 0, 0, 0.223) solid; ;
+    border: 1px rgba(0, 0, 0, 0.223) solid;
+    min-height: 140px;
 }
 
+
 .download-btn {
+    cursor: pointer;
+    align-self: center;
+    width: 80%;
+    max-width: 250px;
+    display: flex;
+    justify-content: center;
     text-shadow: 0.4px 0.4px  #a679ff;
     height: fit-content;
     gap: 0.5em;
@@ -207,13 +259,108 @@ i {
 }
 
 .otros-documentos-btn {
+    cursor: pointer;
     font-size: 1.02rem;
     font-family: inherit;
     font-weight: 600;
+    color: white;
     border: none;
     border-radius: 8px;
     background-color: #b54a8ccb;
     padding: .8em 1.8em;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.138);
     transition: all 0.35s;
+}
+
+/* Back button - mobile first */
+.back-btn {
+    cursor: pointer;
+    position: absolute;
+    top: 0.5em;
+    left: 0.5em;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.6em 1em;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: white;
+    background-color: rgba(99, 48, 128, 0.85);
+    border: none;
+    border-radius: 8px;
+    transition: all 0.25s;
+    min-height: 44px;
+    z-index: 10;
+}
+
+.back-btn:hover {
+    background-color: rgba(99, 48, 128, 1);
+}
+
+.back-btn:active {
+    transform: scale(0.97);
+}
+
+/* Loading spinner */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    gap: 1em;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #e0e0e0;
+    border-top-color: #633080;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Error container */
+.error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4em;
+    gap: 1em;
+    text-align: center;
+}
+
+.error-container > i {
+    font-size: 3rem;
+    color: #d32f2f;
+}
+
+.error-container .back-btn {
+    position: static;
+}
+
+/* Focus states for accessibility */
+.dicipline-btn:focus-visible,
+.otros-documentos-btn:focus-visible,
+.download-btn:focus-visible,
+.back-btn:focus-visible,
+.btn-header:focus-visible {
+    outline: 3px solid #633080;
+    outline-offset: 2px;
+}
+
+/* Download button hover */
+.download-btn:hover {
+    background-color: #7a4569;
+    transform: translateY(-2px);
+}
+
+.download-btn:active {
+    transform: translateY(0);
 }
