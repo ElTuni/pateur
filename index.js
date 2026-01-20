@@ -87,64 +87,102 @@ const especialidades = [
 ]
 
 let pdf_db = []
+let allDocuments = [] // Todos los documentos de todas las especialidades
+let isDataLoaded = false
 
-async function getFolder(folderId) {
-  // Buscar archivos que estén dentro de esa carpeta
-  const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${apiKey}&fields=files(id,name)`
-  const respuesta = await fetch(url)
-  const data = await respuesta.json()
-  pdf_db = data.files
+async function preloadAllDocuments() {
+  try {
+    // 1. Obtener las carpetas principales (especialidades)
+    const mainUrl = `https://www.googleapis.com/drive/v3/files?q='${folderId_main}'+in+parents&key=${apiKey}&fields=files(id,name)`
+    const mainResponse = await fetch(mainUrl)
+    const mainData = await mainResponse.json()
+    pdf_db = mainData.files
+
+    // 2. Para cada especialidad, obtener sus documentos
+    const promises = pdf_db.map(async (folder) => {
+      const url = `https://www.googleapis.com/drive/v3/files?q='${folder.id}'+in+parents&key=${apiKey}&fields=files(name,webViewLink,modifiedTime,mimeType,id)`
+      const response = await fetch(url)
+      const data = await response.json()
+
+      if (!data.files || data.files.length === 0) return []
+
+      // Si tiene subcarpetas, obtener los documentos de cada una
+      if (data.files[0]?.mimeType.endsWith("folder")) {
+        const subPromises = data.files.map(async (subFolder) => {
+          const subUrl = `https://www.googleapis.com/drive/v3/files?q='${subFolder.id}'+in+parents&key=${apiKey}&fields=files(name,webViewLink,modifiedTime,mimeType)`
+          const subResponse = await fetch(subUrl)
+          const subData = await subResponse.json()
+
+          return (subData.files || []).map(doc => ({
+            ...doc,
+            especialidad: folder.name,
+            subcarpeta: subFolder.name
+          }))
+        })
+        const subResults = await Promise.all(subPromises)
+        return subResults.flat()
+      } else {
+        // Documentos directamente en la carpeta
+        return data.files.map(doc => ({
+          ...doc,
+          especialidad: folder.name,
+          subcarpeta: null
+        }))
+      }
+    })
+
+    const results = await Promise.all(promises)
+    allDocuments = results.flat()
+    isDataLoaded = true
+
+  } catch (error) {
+    console.error("Error precargando documentos:", error)
+  }
 }
 
-getFolder(folderId_main)
+// Iniciar precarga
+preloadAllDocuments()
 
-async function getFolderDicipline(e) {
-  showLoading()
+function getFolderDicipline(e) {
+  // Si los datos no están cargados, mostrar loading y esperar
+  if (!isDataLoaded) {
+    showLoading()
+    setTimeout(() => getFolderDicipline(e), 500)
+    return
+  }
 
-  try {
-    // lo separamos, ya que esta separado por "_"
-    const current_dicipline_spaced = e.replaceAll("_", " ")
-    // lo juntamos, ya que esta separado por "_"
-    const current_dicipline = e.replaceAll("_", "")
+  const current_dicipline_spaced = e.replaceAll("_", " ")
+  const current_dicipline = e.replaceAll("_", "")
 
-    // filtrar de todas las dicipline, cual es la elegida y obtener un obj
-    const drive_current_dicipline_obj = pdf_db.filter(
-      pdf_unit => deleteSpaces(pdf_unit.name) === current_dicipline)
-      [0]
+  // Filtrar documentos de esta especialidad desde el cache
+  const especialidadDocs = allDocuments.filter(
+    doc => deleteSpaces(doc.especialidad) === current_dicipline
+  )
 
-    if (!drive_current_dicipline_obj) {
-      throw new Error("Especialidad no encontrada")
-    }
+  if (especialidadDocs.length === 0) {
+    showError("No se encontraron documentos para esta especialidad.")
+    return
+  }
 
-    // buscamos en el drive, segun el id de la capeta de la diciplina
-    const url = `https://www.googleapis.com/drive/v3/files?q='${drive_current_dicipline_obj.id}'+in+parents&key=${apiKey}&fields=files(name,webViewLink,modifiedTime,mimeType,id)`
+  // Agrupar por subcarpeta si existen
+  const tieneSubcarpetas = especialidadDocs.some(doc => doc.subcarpeta)
 
-    // esperamos hasta que haga los request
-    const response = await fetch(url)
-    const data = await response.json()
+  if (tieneSubcarpetas) {
+    // Agrupar por subcarpeta
+    const grupos = {}
+    especialidadDocs.forEach(doc => {
+      const key = doc.subcarpeta || "Sin categoría"
+      if (!grupos[key]) grupos[key] = []
+      grupos[key].push(doc)
+    })
 
-    if (!data.files || data.files.length === 0) {
-      throw new Error("No se encontraron documentos")
-    }
+    const html = Object.entries(grupos)
+      .map(([subcarpeta, docs]) => renderDownloadDivs(docs, subcarpeta))
+      .join('')
 
-    // checkeamos si el primer archivo de la carpeta, es un folder
-    if (data.files[0]?.mimeType.endsWith("folder")) {
-      // creamos la varialbe donde vamos a guardar todos los archivos de las carpetas
-      let allInsideFiles = []
-      for (const folderFile of data.files) {
-        const subResponse = await fetch(`https://www.googleapis.com/drive/v3/files?q='${folderFile.id}'+in+parents&key=${apiKey}&fields=files(name,webViewLink,modifiedTime,mimeType)`)
-        const subData = await subResponse.json()
-        // vamos creando los divs, con los archivos de cada carpeta, con su respectivo nombre
-        allInsideFiles.push(renderDownloadDivs(subData.files, folderFile.name))
-      }
-      renderSubPage(allInsideFiles.join(''), current_dicipline_spaced, current_dicipline)
-    }
-    // si no contiene ningun folder
-    else {
-      renderSubPage(renderDownloadDivs(data.files), current_dicipline_spaced, current_dicipline)
-    }
-  } catch (error) {
-    showError("Hubo un problema al cargar los documentos. Por favor, intente nuevamente.")
+    renderSubPage(html, current_dicipline_spaced, current_dicipline)
+  } else {
+    renderSubPage(renderDownloadDivs(especialidadDocs), current_dicipline_spaced, current_dicipline)
   }
 }
 
@@ -163,6 +201,14 @@ function renderMain(){
         <h2 class="subtitulos">Aquí encontrará los consentimientos informados de los procedimientos quirúrgicos más frecuentes, elaborados por los diferentes servicios del Centro Quirúrgico, validados por el Departamento de Calidad de la Clínica Pasteur.</h2>
       </div>
 
+      <div class="search-container">
+        <div class="search-input-wrapper">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" id="search-input" class="search-input" placeholder="Buscar documentos..." autocomplete="off">
+        </div>
+        <div id="search-results" class="search-results"></div>
+      </div>
+
       <div class="otros-documentos-container">
         <button data-especialidad="Documentos_generales" class="otros-documentos-btn">
           Documentos generales
@@ -175,7 +221,37 @@ function renderMain(){
           ${buttons_html}
         </div>
       </div>`
+
+  // Agregar event listener al buscador
+  const searchInput = document.getElementById('search-input')
+  const searchIcon = document.querySelector('.search-icon')
+
+  if (searchInput) {
+    searchInput.addEventListener('input', debounce(handleSearch, 300))
+
+    // Mostrar resultados de nuevo al hacer focus si hay texto
+    searchInput.addEventListener('focus', () => {
+      const resultsContainer = document.getElementById('search-results')
+      if (searchInput.value.trim().length >= 2 && resultsContainer.innerHTML) {
+        resultsContainer.classList.add('active')
+      }
+    })
+  }
+
+  if (searchIcon && searchInput) {
+    searchIcon.addEventListener('click', () => searchInput.focus())
+  }
 }
+
+// Cerrar resultados de búsqueda al hacer clic fuera
+document.addEventListener('click', function(e) {
+  const searchContainer = document.querySelector('.search-container')
+  const resultsContainer = document.getElementById('search-results')
+
+  if (searchContainer && resultsContainer && !searchContainer.contains(e.target)) {
+    resultsContainer.classList.remove('active')
+  }
+})
 
 // event listener para los botones de las especialidades
 document.addEventListener("click", function(e){
@@ -235,6 +311,77 @@ function toUrlSlug(text) {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replaceAll(" ", "")
+}
+
+function debounce(func, wait) {
+  let timeout
+  return function(...args) {
+    clearTimeout(timeout)
+    timeout = setTimeout(() => func.apply(this, args), wait)
+  }
+}
+
+function normalizeText(text) {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+}
+
+function handleSearch(e) {
+  const query = e.target.value.trim()
+  const resultsContainer = document.getElementById('search-results')
+
+  if (!query || query.length < 2) {
+    resultsContainer.innerHTML = ''
+    resultsContainer.classList.remove('active')
+    return
+  }
+
+  if (!isDataLoaded) {
+    resultsContainer.innerHTML = '<p class="search-loading">Cargando datos...</p>'
+    resultsContainer.classList.add('active')
+    return
+  }
+
+  const normalizedQuery = normalizeText(query)
+
+  // Filtrar documentos que coincidan con la búsqueda
+  const results = allDocuments.filter(doc => {
+    const normalizedName = normalizeText(doc.name)
+    return normalizedName.includes(normalizedQuery)
+  })
+
+  if (results.length === 0) {
+    resultsContainer.innerHTML = '<p class="search-no-results">No se encontraron documentos</p>'
+    resultsContainer.classList.add('active')
+    return
+  }
+
+  // Agrupar resultados por especialidad
+  const grouped = {}
+  results.forEach(doc => {
+    if (!grouped[doc.especialidad]) grouped[doc.especialidad] = []
+    grouped[doc.especialidad].push(doc)
+  })
+
+  // Renderizar resultados
+  const html = Object.entries(grouped).map(([especialidad, docs]) => `
+    <div class="search-group">
+      <p class="search-group-title">${especialidad}</p>
+      ${docs.slice(0, 5).map(doc => `
+        <a href="${doc.webViewLink}" target="_blank" class="search-result-item">
+          <i class="fa-regular fa-file-pdf"></i>
+          <span>${doc.name.replace(/\.pdf$/i, "")}</span>
+          <span class="search-result-date">${new Date(doc.modifiedTime).toLocaleDateString('es-AR', {day: '2-digit', month: '2-digit', year: '2-digit'})}</span>
+        </a>
+      `).join('')}
+      ${docs.length > 5 ? `<p class="search-more">+${docs.length - 5} más...</p>` : ''}
+    </div>
+  `).join('')
+
+  resultsContainer.innerHTML = html
+  resultsContainer.classList.add('active')
 }
 
 function renderDownloadDivs(downloadsArray, folderName = "") {

@@ -70,7 +70,7 @@ h1 {
 /* title things */
 .main-title {
     text-align: center;
-    margin: 6em 0.5em 6em 0.5em;
+    margin: 6em 0.5em 2em 0.5em;
 }
 
 .main-title h1 {
@@ -256,6 +256,7 @@ i {
 
 .otros-documentos-container {
     text-align: center;
+    margin-top: 2em;
 }
 
 .otros-documentos-btn {
@@ -363,4 +364,134 @@ i {
 
 .download-btn:active {
     transform: translateY(0);
+}
+
+/* Search styles */
+.search-container {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 1em;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 1em;
+    color: #633080;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.search-input {
+    width: 100%;
+    padding: 1em 1em 1em 3em;
+    font-size: 1rem;
+    font-family: inherit;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.search-input:focus {
+    border-color: #633080;
+    box-shadow: 0 0 0 3px rgba(99, 48, 128, 0.15);
+}
+
+.search-input::placeholder {
+    color: #999;
+}
+
+.search-results {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 1em;
+    right: 1em;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 100;
+    margin-top: 0.5em;
+}
+
+.search-results.active {
+    display: block;
+}
+
+.search-group {
+    padding: 0.75em 1em;
+    border-bottom: 1px solid #eee;
+}
+
+.search-group:last-child {
+    border-bottom: none;
+}
+
+.search-group-title {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #633080;
+    margin: 0 0 0.5em 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75em;
+    padding: 0.6em 0.5em;
+    color: #333;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.search-result-item:hover {
+    background-color: #f5f0f8;
+}
+
+.search-result-item i {
+    color: #8B5279;
+    font-size: 1.2rem;
+}
+
+.search-result-item span {
+    font-size: 0.95rem;
+    line-height: 1.3;
+    flex: 1;
+}
+
+.search-result-date {
+    font-size: 0.8rem;
+    color: #888;
+    white-space: nowrap;
+    width: fit-content;
+    text-align: right;
+}
+
+.search-no-results,
+.search-loading {
+    padding: 1.5em;
+    text-align: center;
+    color: #666;
+    margin: 0;
+}
+
+.search-more {
+    font-size: 0.85rem;
+    color: #888;
+    margin: 0.5em 0 0 0;
+    font-style: italic;
 }
